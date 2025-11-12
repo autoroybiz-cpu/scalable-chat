@@ -4,20 +4,20 @@ https://github.com/autoroybiz-cpu/scalable-chat
 
 ## תיאור הפרויקט
 פרויקט DevOps מתקדם לבניית אפליקציית צ'אט ריאל-טיים (כמו Slack פשוט) מבוססת מיקרו-שירותים. הפרויקט מדגים:
-- Microservices עם Node.js, Express, Socket.io.
-- Containerization עם Docker.
-- Orchestration עם Kubernetes (מקומי ב-Minikube, ענן ב-AWS EKS).
+- Microservices with Node.js, Express, Socket.io.
+- Containerization with Docker.
+- Orchestration with Kubernetes (מקומי ב-Minikube, ענן ב-AWS EKS).
 - Infrastructure as Code (IaC) עם Terraform.
-- GitOps עם ArgoCD.
-- CI/CD עם GitHub Actions.
-- Observability עם Prometheus, Grafana, ELK Stack.
+- GitOps with ArgoCD.
+- CI/CD with GitHub Actions.
+- Observability with Prometheus, Grafana, ELK Stack.
 - Security ו-Chaos Engineering.
 
 מטרות: להדגים scalability, high availability, ו-best practices ב-DevOps.
 
 ## טכנולוגיות
 - Backend: Node.js, Express, Socket.io, JWT.
-- Database: MongoDB (או Redis לחלקים).
+- Database: MongoDB ( Redis ).
 - Containers: Docker, Docker Compose.
 - Kubernetes: Minikube, Helm, EKS.
 - IaC: Terraform.
