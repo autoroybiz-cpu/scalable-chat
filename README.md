@@ -26,8 +26,7 @@ https://github.com/autoroybiz-cpu/scalable-chat
 - Logging: ELK (Elasticsearch, Logstash, Kibana).
 
 ## ארכיטקטורה
-(כאן נוסיף דיאגרמה בהמשך)
-
+![Architecture Diagram](architecture-diagram.png)
 ## התקנה והרצה מקומית
 (נוסיף בהמשך)
 
