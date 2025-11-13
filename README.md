@@ -73,9 +73,13 @@ Node.js + Socket.IO service running a real-time chat room
 ## 🧭 **Roadmap & Future Improvements**
 
 ✅ Upgraded UI design with the **AutoRoy Rocket Signature**
+
 ⬜ Persistent message history (DB / Redis)
+
 ⬜ Support for multiple chat rooms
+
 ⬜ Full CI/CD pipeline (GitHub Actions → Render)
+
 ⬜ Automated testing (unit + integration)
 
 ---
