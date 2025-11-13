@@ -201,1189 +201,329 @@
       background: #ffffff;
     }
     button {
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-<meta charset="UTF-8" />
-<title>AutoRoy Scalable Chat Console</title>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-
-<!-- Font -->
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap"
-rel="stylesheet"
-/>
-
-<!-- Socket.IO client -->
-<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-
-<style>
-:root {
---bg: #020617;
---bg2: #020617;
---card-bg: #020617;
---card-inner: #0b1120;
---accent1: #22c55e;
---accent2: #06b6d4;
---accent3: #6366f1;
---accent-soft: rgba(56, 189, 248, 0.18);
---danger: #f97373;
---text-main: #e5e7eb;
---text-muted: #9ca3af;
---border-subtle: rgba(148, 163, 184, 0.35);
---input-bg: #020617;
---input-border: rgba(148, 163, 184, 0.55);
---shadow-strong: 0 18px 45px rgba(15, 23, 42, 0.9);
---shadow-soft: 0 12px 35px rgba(15, 23, 42, 0.7);
---radius-xl: 26px;
---radius-lg: 18px;
---radius-pill: 999px;
-}
-
-* {
-box-sizing: border-box;
-}
-
-html,
-body {
-margin: 0;
-padding: 0;
-height: 100%;
-font-family: "Heebo", system-ui, -apple-system, BlinkMacSystemFont,
-"Segoe UI", sans-serif;
-background: radial-gradient(circle at 0% 0%, #1d4ed8 0, #020617 48%),
-radial-gradient(circle at 100% 100%, #22c55e 0, #020617 45%);
-color: var(--text-main);
-overscroll-behavior-y: none;
-}
-
-body {
-display: flex;
-align-items: stretch;
-justify-content: center;
-padding: 20px;
-}
-
-/* ===== Rocket signature (AutoRoy) ===== */
-.autoroy-rocket {
-position: fixed;
-top: 14px;
-left: 14px;
-width: 46px;
-height: 46px;
-border-radius: var(--radius-pill);
-background: radial-gradient(circle at 30% 30%, #38bdf8, #020617 70%);
-box-shadow: 0 0 22px rgba(56, 189, 248, 0.55);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 999;
-cursor: default;
-animation: rocket-float 2.4s ease-in-out infinite;
-}
-
-.autoroy-rocket-inner {
-font-size: 22px;
-transform: rotate(25deg);
-}
-
-@keyframes rocket-float {
-0% {
-transform: translateY(0);
-}
-50% {
-transform: translateY(-5px);
-}
-100% {
-transform: translateY(0);
-}
-}
-
-/* ===== App Shell ===== */
-.app-shell {
-width: 100%;
-max-width: 1120px;
-background: radial-gradient(circle at 0% 0%, #1e293b 0, #020617 60%);
-border-radius: 32px;
-padding: 20px;
-box-shadow: var(--shadow-strong);
-display: flex;
-flex-direction: column;
-gap: 16px;
-border: 1px solid rgba(148, 163, 184, 0.35);
-backdrop-filter: blur(22px);
-}
-
-@media (max-width: 768px) {
-body {
-padding: 10px;
-}
-
-.app-shell {
-border-radius: 22px;
-padding: 14px;
-}
-}
-
-.app-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 16px;
-padding: 12px 16px;
-border-radius: 18px;
-background: linear-gradient(
-135deg,
-rgba(15, 23, 42, 0.95),
-rgba(30, 64, 175, 0.95)
-);
-border: 1px solid rgba(148, 163, 184, 0.5);
-box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
-}
-
-.app-title-block {
-display: flex;
-flex-direction: column;
-gap: 4px;
-}
-
-.app-kicker {
-font-size: 0.8rem;
-letter-spacing: 0.16em;
-text-transform: uppercase;
-color: #a5b4fc;
-}
-
-.app-title {
-font-size: 1.35rem;
-font-weight: 600;
-display: flex;
-flex-wrap: wrap;
-align-items: baseline;
-gap: 6px;
-}
-
-.app-title span.brand {
-background: linear-gradient(90deg, #22c55e, #06b6d4, #a855f7);
--webkit-background-clip: text;
-color: transparent;
-font-weight: 700;
-}
-
-.app-subtitle {
-font-size: 0.85rem;
-color: var(--text-muted);
-}
-
-.app-header-badges {
-display: flex;
-flex-wrap: wrap;
-gap: 6px;
-justify-content: flex-end;
-}
-
-.badge {
-display: inline-flex;
-align-items: center;
-gap: 6px;
-padding: 4px 10px;
-font-size: 0.78rem;
-border-radius: var(--radius-pill);
-border: 1px solid rgba(148, 163, 184, 0.6);
-background: rgba(15, 23, 42, 0.9);
-color: #e5e7eb;
-}
-
-.badge-dot {
-width: 7px;
-height: 7px;
-border-radius: 999px;
-background: #22c55e;
-box-shadow: 0 0 11px rgba(34, 197, 94, 0.9);
-}
-
-.badge-dot.badge-dot-warn {
-background: #facc15;
-box-shadow: 0 0 11px rgba(250, 204, 21, 0.9);
-}
-
-.badge-label {
-opacity: 0.9;
-}
-
-/* ===== Screens ===== */
-.screens {
-flex: 1;
-display: flex;
-position: relative;
-min-height: 420px;
-}
-
-.screen {
-position: absolute;
-inset: 0;
-display: none;
-}
-
-.screen.active {
-display: flex;
-}
-
-/* ===== Login screen ===== */
-#login {
-gap: 16px;
-align-items: stretch;
-flex-wrap: wrap;
-}
-
-.login-card {
-flex: 1 1 320px;
-background: linear-gradient(
-180deg,
-rgba(15, 23, 42, 0.95),
-rgba(15, 23, 42, 0.98)
-);
-border-radius: var(--radius-xl);
-padding: 20px 20px 18px;
-box-shadow: var(--shadow-soft);
-border: 1px solid rgba(148, 163, 184, 0.5);
-display: flex;
-flex-direction: column;
-justify-content: space-between;
-}
-
-.login-header {
-margin-bottom: 12px;
-}
-
-.login-title {
-font-size: 1.08rem;
-font-weight: 600;
-margin-bottom: 4px;
-}
-
-.login-sub {
-font-size: 0.9rem;
-color: var(--text-muted);
-}
-
-.form-group {
-display: flex;
-flex-direction: column;
-gap: 6px;
-margin-bottom: 12px;
-}
-
-.form-label {
-font-size: 0.86rem;
-color: #cbd5f5;
-}
-
-.input-wrapper {
-position: relative;
-}
-
-.input {
-width: 100%;
-border-radius: var(--radius-lg);
-border: 1px solid var(--input-border);
-background: var(--input-bg);
-color: var(--text-main);
-padding: 10px 12px;
-font-size: 0.9rem;
-outline: none;
-transition: border-color 0.16s ease, box-shadow 0.16s ease,
-background 0.16s ease;
-}
-
-.input::placeholder {
-color: rgba(148, 163, 184, 0.8);
-}
-
-.input:focus {
-border-color: #38bdf8;
-box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.35);
-background: #020617;
-}
-
-.password-hint {
-font-size: 0.78rem;
-color: var(--text-muted);
-}
-
-.btn {
-border: none;
-outline: none;
-cursor: pointer;
-border-radius: var(--radius-pill);
-padding: 10px 16px;
-font-size: 0.92rem;
-font-weight: 500;
-transition: transform 0.12s ease, box-shadow 0.12s ease,
-filter 0.12s ease, opacity 0.12s ease;
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 6px;
-}
-
-.btn-primary {
-width: 100%;
-background: linear-gradient(90deg, #22c55e, #06b6d4);
-color: #020617;
-box-shadow: 0 14px 30px rgba(16, 185, 129, 0.4);
-}
-
-.btn-primary:hover {
-filter: brightness(1.06);
-transform: translateY(-1px);
-box-shadow: 0 18px 36px rgba(16, 185, 129, 0.45);
-}
-
-.btn-primary:active {
-transform: translateY(0);
-box-shadow: 0 10px 26px rgba(16, 185, 129, 0.38);
-}
-
-.login-footer {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-top: 6px;
-font-size: 0.8rem;
-color: var(--text-muted);
-}
-
-.login-footnote {
-opacity: 0.9;
-}
-
-.login-mini-badges {
-display: flex;
-gap: 6px;
-}
-
-.mini-pill {
-padding: 2px 8px;
-border-radius: 999px;
-background: rgba(15, 23, 42, 0.9);
-border: 1px solid rgba(148, 163, 184, 0.45);
-font-size: 0.7rem;
-color: #cbd5f5;
-}
-
-.hero-card {
-flex: 1 1 320px;
-border-radius: var(--radius-xl);
-padding: 18px 18px 16px;
-background: radial-gradient(
-circle at 0 0,
-rgba(56, 189, 248, 0.18),
-transparent 60%
-),
-radial-gradient(
-circle at 100% 100%,
-rgba(34, 197, 94, 0.18),
-transparent 60%
-),
-radial-gradient(
-circle at 120% -20%,
-rgba(129, 140, 248, 0.35),
-transparent 60%
-);
-border: 1px solid rgba(148, 163, 184, 0.5);
-box-shadow: var(--shadow-soft);
-display: flex;
-flex-direction: column;
-gap: 10px;
-}
-
-.hero-title {
-font-size: 1.35rem;
-font-weight: 700;
-margin-bottom: 6px;
-}
-
-.hero-title span.brand {
-background: linear-gradient(90deg, #22c55e, #06b6d4, #a855f7);
--webkit-background-clip: text;
-color: transparent;
-}
-
-.hero-subtitle {
-font-size: 0.9rem;
-color: var(--text-muted);
-max-width: 460px;
-}
-
-.hero-badges {
-display: flex;
-flex-wrap: wrap;
-gap: 6px;
-margin-top: 8px;
-}
-
-.hero-badge {
-padding: 4px 10px;
-border-radius: 999px;
-font-size: 0.78rem;
-background: rgba(15, 23, 42, 0.9);
-border: 1px solid rgba(148, 163, 184, 0.5);
-color: #cbd5f5;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-
-.hero-emoji {
-font-size: 1rem;
-}
-
-@media (max-width: 768px) {
-.app-header {
-flex-direction: column;
-align-items: flex-start;
-}
-
-#login {
-flex-direction: column;
-}
-}
-
-/* ===== Username select screen ===== */
-#username-select {
-align-items: stretch;
-justify-content: center;
-}
-
-.username-card {
-width: 100%;
-max-width: 460px;
-margin: 0 auto;
-border-radius: var(--radius-xl);
-padding: 18px 18px 16px;
-background: radial-gradient(
-circle at 0 0,
-rgba(56, 189, 248, 0.16),
-transparent 60%
-),
-#020617;
-border: 1px solid rgba(148, 163, 184, 0.55);
-box-shadow: var(--shadow-soft);
-display: flex;
-flex-direction: column;
-gap: 10px;
-}
-
-.username-title {
-font-size: 1rem;
-font-weight: 600;
-margin-bottom: 4px;
-}
-
-.username-desc {
-font-size: 0.86rem;
-color: var(--text-muted);
-margin-bottom: 10px;
-}
-
-.username-inline {
-display: flex;
-gap: 8px;
-margin-top: 6px;
-}
-
-@media (max-width: 600px) {
-.username-inline {
-flex-direction: column;
-}
-}
-
-/* ===== Chat screen ===== */
-#chat {
-flex-direction: column;
-gap: 10px;
-}
-
-.chat-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 10px 14px;
-border-radius: var(--radius-lg);
-background: radial-gradient(circle at 0 0, #0f172a, #020617 70%);
-border: 1px solid rgba(148, 163, 184, 0.45);
-}
-
-.chat-header-left {
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
-.avatar {
-width: 34px;
-height: 34px;
-border-radius: 999px;
-background: linear-gradient(135deg, #22c55e, #06b6d4);
-display: flex;
-align-items: center;
-justify-content: center;
-color: #020617;
-font-weight: 600;
-box-shadow: 0 10px 20px rgba(16, 185, 129, 0.45);
-}
-
-.chat-user-info {
-display: flex;
-flex-direction: column;
-gap: 2px;
-}
-
-.chat-display-name {
-font-size: 0.96rem;
-font-weight: 500;
-}
-
-.chat-status {
-font-size: 0.8rem;
-color: var(--text-muted);
-display: flex;
-align-items: center;
-gap: 6px;
-}
-
-.status-dot {
-width: 7px;
-height: 7px;
-border-radius: 999px;
-background: #22c55e;
-box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
-}
-
-.chat-header-right {
-display: flex;
-gap: 6px;
-align-items: center;
-}
-
-.pill {
-padding: 4px 10px;
-border-radius: 999px;
-font-size: 0.78rem;
-background: rgba(15, 23, 42, 0.92);
-border: 1px solid rgba(148, 163, 184, 0.5);
-color: #cbd5f5;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-
-.pill span {
-opacity: 0.9;
-}
-
-.chat-body {
-flex: 1;
-min-height: 260px;
-border-radius: var(--radius-xl);
-background: linear-gradient(
-180deg,
-rgba(15, 23, 42, 0.98),
-rgba(15, 23, 42, 1)
-);
-border: 1px solid rgba(148, 163, 184, 0.5);
-box-shadow: var(--shadow-soft);
-padding: 12px 10px 10px;
-display: flex;
-flex-direction: column;
-gap: 8px;
-}
-
-.messages {
-flex: 1;
-overflow-y: auto;
-padding: 6px 4px 6px 6px;
-display: flex;
-flex-direction: column;
-gap: 4px;
-scrollbar-width: thin;
-scrollbar-color: rgba(148, 163, 184, 0.7) transparent;
-}
-
-.messages::-webkit-scrollbar {
-width: 8px;
-}
-
-.messages::-webkit-scrollbar-track {
-background: transparent;
-}
-
-.messages::-webkit-scrollbar-thumb {
-background: rgba(148, 163, 184, 0.7);
-border-radius: 999px;
-}
-
-.message-row {
-display: flex;
-width: 100%;
-}
-
-.message-row.self {
-justify-content: flex-start; /* RTL */
-}
-
-.message-row.other {
-justify-content: flex-end; /* RTL */
-}
-
-.message-bubble {
-max-width: 80%;
-padding: 8px 12px;
-border-radius: 16px;
-font-size: 0.92rem;
-line-height: 1.45;
-word-wrap: break-word;
-word-break: break-word;
-box-shadow: 0 10px 28px rgba(15, 23, 42, 0.9);
-}
-
-.message-bubble.self {
-background: linear-gradient(135deg, #22c55e, #06b6d4);
-color: #020617;
-}
-
-.message-bubble.other {
-background: radial-gradient(
-circle at 0 0,
-rgba(56, 189, 248, 0.35),
-#020617 60%
-);
-border: 1px solid rgba(148, 163, 184, 0.6);
-color: #e5e7eb;
-}
-
-.message-bubble img {
-max-width: 100%;
-border-radius: 12px;
-display: block;
-}
-
-.message-system {
-width: 100%;
-display: flex;
-justify-content: center;
-margin: 6px 0;
-}
-
-.message-system-pill {
-max-width: 80%;
-padding: 4px 10px;
-border-radius: 999px;
-font-size: 0.78rem;
-background: rgba(15, 23, 42, 0.96);
-border: 1px dashed rgba(148, 163, 184, 0.8);
-color: #e5e7eb;
-display: inline-flex;
-align-items: center;
-gap: 6px;
-}
-
-.message-system-pill span.emoji {
-font-size: 0.9rem;
-}
-
-/* Input row */
-.chat-input-row {
-margin-top: 4px;
-display: flex;
-flex-direction: column;
-gap: 6px;
-}
-
-.chat-input-inner {
-display: flex;
-gap: 8px;
-align-items: center;
-padding: 8px 10px;
-border-radius: 18px;
-background: rgba(15, 23, 42, 0.95);
-border: 1px solid rgba(148, 163, 184, 0.5);
-}
-
-.chat-input-inner .input {
-flex: 1;
-border-radius: 999px;
-background: #020617;
-}
-
-.btn-send {
-background: linear-gradient(90deg, #22c55e, #06b6d4);
-color: #020617;
-padding-inline: 14px;
-box-shadow: 0 10px 24px rgba(16, 185, 129, 0.5);
-white-space: nowrap;
-}
-
-.btn-send:hover {
-filter: brightness(1.05);
-transform: translateY(-1px);
-}
-
-.btn-send:active {
-transform: translateY(0);
-box-shadow: 0 8px 20px rgba(16, 185, 129, 0.42);
-}
-
-.chat-input-hint {
-font-size: 0.78rem;
-color: var(--text-muted);
-display: flex;
-justify-content: space-between;
-gap: 6px;
-}
-
-.chat-input-hint span {
-opacity: 0.9;
-}
-
-/* Footer */
-.app-footer {
-margin-top: 4px;
-display: flex;
-align-items: center;
-justify-content: space-between;
-font-size: 0.78rem;
-color: var(--text-muted);
-padding: 4px 4px 0;
-}
-
-.footer-link {
-color: #38bdf8;
-text-decoration: none;
-display: inline-flex;
-align-items: center;
-gap: 4px;
-}
-
-.footer-link:hover {
-text-decoration: underline;
-}
-
-.footer-link span {
-font-size: 0.9rem;
-}
-</style>
+      width: 100%;
+      padding: 11px 12px;
+      margin: 6px 0 0;
+      background: linear-gradient(120deg, #00c853, #00b0ff);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, opacity 0.16s ease;
+      box-shadow: 0 14px 28px rgba(0, 184, 148, 0.35);
+    }
+    button:hover {
+      transform: translateY(-1px) scale(1.01);
+      box-shadow: 0 18px 40px rgba(0, 184, 148, 0.45);
+    }
+    button:active {
+      transform: translateY(0) scale(0.99);
+      box-shadow: 0 8px 18px rgba(0, 184, 148, 0.35);
+    }
+    #messages {
+      height: 400px;
+      overflow-y: auto;
+      padding: 15px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 12px;
+      margin: 10px 0 14px;
+      display: flex;
+      flex-direction: column-reverse;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.8) transparent;
+    }
+    #messages::-webkit-scrollbar {
+      width: 6px;
+    }
+    #messages::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.8);
+      border-radius: 999px;
+    }
+    .message {
+      max-width: 72%;
+      margin: 6px 0;
+      padding: 9px 12px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      animation: fadeIn 0.28s ease-out;
+    }
+    .message.sent {
+      background: linear-gradient(135deg, #00c853, #00e5ff);
+      align-self: flex-end;
+      margin-left: auto;
+      color: #ffffff;
+    }
+    .message.received {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      align-self: flex-start;
+    }
+    body.light-mode .message.received {
+      background: #ffffff;
+      border-color: rgba(148, 163, 184, 0.6);
+    }
+    .message img {
+      max-width: 140px;
+      max-height: 140px;
+      border-radius: 10px;
+      margin: 6px 0 2px;
+      display: block;
+    }
+    #chat {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 22px 22px 20px;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 10px;
+    }
+    .profile img {
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      border: 2px solid rgba(148, 163, 184, 0.6);
+    }
+    #user-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    #messageInput {
+      margin-top: 4px;
+    }
+    .chat-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .chat-actions button {
+      width: auto;
+      min-width: 80px;
+      padding-inline: 14px;
+      margin: 0;
+    }
+    .logout-btn {
+      background: linear-gradient(120deg, #ef4444, #f97316);
+      box-shadow: 0 12px 28px rgba(239, 68, 68, 0.4);
+    }
+    .theme-toggle {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      width: 38px;
+      height: 38px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.85);
+      color: #f9fafb;
+      cursor: pointer;
+      font-size: 1.1rem;
+      box-shadow: 0 14px 35px rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      z-index: 20;
+      backdrop-filter: blur(10px);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }
+    body.light-mode .theme-toggle {
+      background: rgba(255, 255, 255, 0.9);
+      color: #111827;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
+    }
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.75);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
-<!-- AutoRoy rocket signature -->
-<div class="autoroy-rocket" title="AutoRoy Cloud">
-<div class="autoroy-rocket-inner">🚀</div>
-</div>
+  <div class="theme-toggle" onclick="toggleTheme()">🌙</div>
+  <div class="page-wrapper">
+    <div class="chat-container">
+      <header>
+        AUTOROY CLOUD
+        <span>SCALABLE CHAT CONSOLE</span>
+      </header>
+      <!-- מסך התחברות -->
+      <div id="login" class="screen active">
+        <div class="hero">
+          <div class="hero-kicker">AUTO-POWERED DEVOPS</div>
+          <h1 class="hero-title">
+            ברוך הבא אל <span>AutoRoy Chat</span>
+          </h1>
+          <p class="hero-subtitle">
+            סביבת צ'אט סקיילבילית שתוכננה כדי להדגים שאתה יודע להזניק שירותים, לחבר ביניהם
+            ולתפעל מערכת אמיתית – כמו עובד DevOps.
+          </p>
+          <div class="hero-badges">
+            <div class="hero-badge">
+              <span class="hero-badge-dot"></span>
+              Realtime Socket.IO
+            </div>
+            <div class="hero-badge">
+              Auth Service on 3000
+            </div>
+            <div class="hero-badge">
+              Chat Service on 3001
+            </div>
+          </div>
+        </div>
+        <div class="login-box">
+          <div class="login-title">התחברות למערכת</div>
+          <div class="login-caption">הכנס שם משתמש וסיסמה כדי להמשיך לבחירת שם תצוגה וצ'אט חי.</div>
+          <label for="username">שם משתמש</label>
+          <input type="text" id="username" placeholder="שם משתמש (לדוגמה: roy)" />
+          <label for="password">סיסמה</label>
+          <input type="password" id="password" placeholder="סיסמה (לדוגמה: 123)" />
+          <button onclick="login()">התחבר לצ'אט</button>
+        </div>
+      </div>
+      <!-- מסך בחירת שם תצוגה -->
+      <div id="username-select" class="screen">
+        <h2>בחר שם תצוגה</h2>
+        <input type="text" id="display-name" placeholder="שם תצוגה (למשל: רוי)" />
+        <button onclick="setDisplayName()">אשר</button>
+      </div>
+      <!-- מסך הצ'אט -->
+      <div id="chat" class="screen">
+        <div class="profile">
+          <img src="https://via.placeholder.com/40" alt="Profile" id="profile-img" />
+          <span id="user-name"></span>
+        </div>
+        <div id="messages"></div>
+        <input type="text" id="messageInput" placeholder="הקלד הודעה או URL תמונה..." />
+        <div class="chat-actions">
+          <button onclick="sendMessage()">שלח</button>
+          <button class="logout-btn" onclick="logout()">התנתק</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<div class="app-shell">
-<!-- Header -->
-<header class="app-header">
-<div class="app-title-block">
-<div class="app-kicker">AutoRoy Cloud · DevOps Demo</div>
-<div class="app-title">
-קונסולת צ׳אט&nbsp;<span class="brand">Scalable</span>
-</div>
-<div class="app-subtitle">
-צ׳אט סקיילבילי לדמו DevOps – לוגין, בחירת שם תצוגה, Socket.IO ו-Render backend.
-</div>
-</div>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    let socket;
+    let displayName;
+    const loginScreen = document.getElementById('login');
+    const usernameSelectScreen = document.getElementById('username-select');
+    const chatScreen = document.getElementById('chat');
+    const messages = document.getElementById('messages');
+    const profileImg = document.getElementById('profile-img');
+    const userNameSpan = document.getElementById('user-name');
 
-<div class="app-header-badges">
-<div class="badge">
-<span class="badge-dot"></span>
-<span class="badge-label">Auth Service · Node</span>
-</div>
-<div class="badge">
-<span class="badge-dot badge-dot-warn"></span>
-<span class="badge-label">Chat Service · Socket.IO</span>
-</div>
-</div>
-</header>
+    function login() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if (!username || !password) {
+        alert('אנא מלא את כל השדות');
+        return;
+      }
+        fetch('https://autoroy-auth-service.onrender.com/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.token) {
+          loginScreen.classList.remove('active');
+          usernameSelectScreen.classList.add('active');
+        } else {
+          alert(data.error || 'התחברות נכשלה');
+        }
+      })
+      .catch(err => alert('שגיאה: ' + err.message));
+    }
 
-<!-- Screens -->
-<main class="screens">
-<!-- Login -->
-<section id="login" class="screen active">
-<div class="login-card">
-<div>
-<div class="login-header">
-<div class="login-title">התחברות למערכת</div>
-<div class="login-sub">
-הכנס שם משתמש וסיסמה כדי להדגים את זרימת ה-Auth (לוקאלי בלבד).
-</div>
-</div>
+    function setDisplayName() {
+      displayName = document.getElementById('display-name').value.trim();
+      if (!displayName) {
+        alert('אנא בחר שם תצוגה');
+        return;
+      }
+      usernameSelectScreen.classList.remove('active');
+      chatScreen.classList.add('active');
+      userNameSpan.textContent = displayName;
+      socket = io('https://autoroy-chat-service.onrender.com', {
+      auth: { token: username + 'token123' }
+    });
+      socket.on('connect', () => addMessage(`${displayName} הצטרף לצ\'אט!`));
+      socket.on('message', (msg) => addMessage(msg));
+      socket.on('connect_error', (err) => alert('שגיאת חיבור: ' + err.message));
+    }
 
-<div class="form-group">
-<label class="form-label" for="username">שם משתמש</label>
-<div class="input-wrapper">
-<input
-id="username"
-class="input"
-type="text"
-placeholder="לדוגמה: roy"
-autocomplete="off"
-/>
-</div>
-</div>
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      if (socket && message && displayName) {
+        if (message.startsWith('http') && (message.endsWith('.jpg') || message.endsWith('.png'))) {
+          const fullMessage = `${displayName} שלח תמונה: `;
+          socket.emit('message', fullMessage);
+          addMessageWithImage(fullMessage, message);
+        } else {
+          const fullMessage = `${displayName}: ${message}`;
+          socket.emit('message', fullMessage);
+        }
+        input.value = '';
+      }
+    }
 
-<div class="form-group">
-<label class="form-label" for="password">סיסמה</label>
-<div class="input-wrapper">
-<input
-id="password"
-class="input"
-type="password"
-placeholder="לדוגמה: 123"
-autocomplete="off"
-/>
-</div>
-<div class="password-hint">טסט-יוזר: roy / 123</div>
-</div>
-</div>
+    function addMessage(msg) {
+      const div = document.createElement('div');
+      div.className = msg.includes(displayName) ? 'message sent' : 'message received';
+      div.innerHTML = msg;
+      messages.appendChild(div);
+      scrollToBottom();
+    }
 
-<div>
-<button class="btn btn-primary" onclick="login()">
-התחבר לצ׳אט
-</button>
+    function addMessageWithImage(msg, imgUrl) {
+      const div = document.createElement('div');
+      div.className = 'message received';
+      div.innerHTML = `${msg} <img src="${imgUrl}" alt="תמונה" onclick="openImage('${imgUrl}')">`;
+      messages.appendChild(div);
+      scrollToBottom();
+    }
 
-<div class="login-footer">
-<div class="login-footnote">הדמו פועל על Render Free Tier 🛰️</div>
-<div class="login-mini-badges">
-<div class="mini-pill">Node.js</div>
-<div class="mini-pill">Express</div>
-<div class="mini-pill">Socket.IO</div>
-</div>
-</div>
-</div>
-</div>
+    function scrollToBottom() {
+      messages.scrollTop = messages.scrollHeight;
+    }
 
-<div class="hero-card">
-<div class="hero-title">
-ברוך הבא אל&nbsp;<span class="brand">AutoRoy Chat</span> 💬
-</div>
-<div class="hero-subtitle">
-זהו פרויקט דמו שמדגים סקיילביליות: הפרדת שירות Auth, שירות Chat,
-ו-UI סטטי שמחובר אליהם. הכל רץ בענן – כמו עובד DevOps אמיתי.
-</div>
+    function openImage(url) {
+      window.open(url, '_blank');
+    }
 
-<div class="hero-badges">
-<div class="hero-badge">
-<span class="hero-emoji">⚙️</span>
-<span>CI/CD לרנדר</span>
-</div>
-<div class="hero-badge">
-<span class="hero-emoji">☁️</span>
-<span>Node backend נפרד</span>
-</div>
-<div class="hero-badge">
-<span class="hero-emoji">🧩</span>
-<span>Socket.IO Realtime</span>
-</div>
-<div class="hero-badge">
-<span class="hero-emoji">🚀</span>
-<span>AutoRoy signature rocket</span>
-</div>
-</div>
-</div>
-</section>
+    function logout() {
+      if (socket) socket.disconnect();
+      loginScreen.classList.add('active');
+      usernameSelectScreen.classList.remove('active');
+      chatScreen.classList.remove('active');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      document.getElementById('display-name').value = '';
+      messages.innerHTML = '';
+    }
 
-<!-- Username select -->
-<section id="username-select" class="screen">
-<div class="username-card">
-<div class="username-title">בחירת שם תצוגה 👋</div>
-<div class="username-desc">
-זה השם שיופיע על כל הודעה שתשלח בצ׳אט. אפשר להשתמש בשם פרטי, כינוי,
-או מה שבא לך.
-</div>
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendMessage();
+    });
 
-<div class="form-group">
-<label class="form-label" for="display-name">שם תצוגה בצ׳אט</label>
-<div class="input-wrapper">
-<input
-id="display-name"
-class="input"
-type="text"
-placeholder="לדוגמה: מלך, DevOps Ninja..."
-autocomplete="off"
-/>
-</div>
-</div>
-
-<div class="username-inline">
-<button class="btn btn-primary" onclick="setDisplayName()">
-המשך לצ׳אט
-</button>
-</div>
-</div>
-</section>
-
-<!-- Chat -->
-<section id="chat" class="screen">
-<div class="chat-header">
-<div class="chat-header-left">
-<div class="avatar" id="profile-img">AR</div>
-<div class="chat-user-info">
-<div class="chat-display-name">
-<span id="user-name">אורח</span>
-</div>
-<div class="chat-status">
-<span class="status-dot"></span>
-<span>מחובר לצ׳אט החי</span>
-</div>
-</div>
-</div>
-
-<div class="chat-header-right">
-<div class="pill">
-<span>Auth</span>
-<span>·</span>
-<span>Render</span>
-</div>
-<div class="pill">
-<span>Chat</span>
-<span>·</span>
-<span>Socket.IO</span>
-</div>
-</div>
-</div>
-
-<div class="chat-body">
-<div id="messages" class="messages"></div>
-
-<div class="chat-input-row">
-<div class="chat-input-inner">
-<input
-id="messageInput"
-class="input"
-type="text"
-placeholder="הקלד הודעה... או URL של תמונה (.jpg / .png / .gif)"
-autocomplete="off"
-onkeydown="if(event.key==='Enter'){sendMessage();}"
-/>
-<button class="btn btn-send" onclick="sendMessage()">שלח</button>
-</div>
-<div class="chat-input-hint">
-<span>💡 טיפ: הדבק קישור לתמונה כדי לשלוח אותה לצ׳אט.</span>
-<span>Enter = שליחה</span>
-</div>
-</div>
-</div>
-</section>
-</main>
-
-<!-- Footer -->
-<footer class="app-footer">
-<span>Built & tuned for DevOps interviews · AutoRoy Cloud</span>
-<a
-class="footer-link"
-href="https://github.com/autoroybiz-cpu/scalable-chat"
-target="_blank"
-rel="noopener noreferrer"
->
-<span>GitHub Repo</span>
-<span>↗</span>
-</a>
-</footer>
-</div>
-
-<script>
-// ===== State =====
-let socket = null;
-let displayName = "";
-let authToken = null;
-
-const loginScreen = document.getElementById("login");
-const usernameSelectScreen = document.getElementById("username-select");
-const chatScreen = document.getElementById("chat");
-
-const messagesEl = document.getElementById("messages");
-const userNameSpan = document.getElementById("user-name");
-const profileImg = document.getElementById("profile-img");
-
-// ===== Helpers =====
-function showScreen(screenId) {
-[loginScreen, usernameSelectScreen, chatScreen].forEach((s) =>
-s.classList.remove("active")
-);
-document.getElementById(screenId).classList.add("active");
-}
-
-function isImageUrl(text) {
-const url = text.trim();
-return /^https?:\/\/.+\.(png|jpe?g|gif|webp)$/i.test(url);
-}
-
-function addSystemMessage(text) {
-const row = document.createElement("div");
-row.className = "message-system";
-
-const pill = document.createElement("div");
-pill.className = "message-system-pill";
-
-const emojiSpan = document.createElement("span");
-emojiSpan.className = "emoji";
-emojiSpan.textContent = "✨";
-
-const textSpan = document.createElement("span");
-textSpan.textContent = text;
-
-pill.appendChild(emojiSpan);
-pill.appendChild(textSpan);
-row.appendChild(pill);
-
-messagesEl.appendChild(row);
-messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-function addMessage(raw, isSelf) {
-const row = document.createElement("div");
-row.className = "message-row " + (isSelf ? "self" : "other");
-
-const bubble = document.createElement("div");
-bubble.className = "message-bubble " + (isSelf ? "self" : "other");
-
-// raw format: "Name: content"
-let from = "מישהו";
-let content = raw;
-
-const idx = raw.indexOf(":");
-if (idx !== -1) {
-from = raw.slice(0, idx).trim();
-content = raw.slice(idx + 1).trim();
-}
-
-if (isImageUrl(content)) {
-const title = document.createElement("div");
-title.style.fontSize = "0.78rem";
-title.style.opacity = "0.85";
-title.style.marginBottom = "4px";
-title.textContent = from + ":";
-
-const img = document.createElement("img");
-img.src = content;
-img.alt = from;
-
-bubble.appendChild(title);
-bubble.appendChild(img);
-} else {
-const strong = document.createElement("strong");
-strong.style.fontSize = "0.86rem";
-strong.textContent = from + ": ";
-
-const span = document.createElement("span");
-span.textContent = content;
-
-bubble.appendChild(strong);
-bubble.appendChild(span);
-}
-
-row.appendChild(bubble);
-messagesEl.appendChild(row); // תמיד מוסיף למטה
-messagesEl.scrollTop = messagesEl.scrollHeight;
-}
-
-// ===== Auth flow =====
-async function login() {
-const username = document.getElementById("username").value.trim();
-const password = document.getElementById("password").value;
-
-if (!username || !password) {
-alert("תודעה: לבנאדם אין סיסמה 😉");
-return;
-}
-
-try {
-const res = await fetch(
-"https://autoroy-auth-service.onrender.com/login",
-{
-method: "POST",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ username, password }),
-}
-);
-
-if (!res.ok) {
-const errData = await res.json().catch(() => ({}));
-throw new Error(errData.error || "שגיאת התחברות");
-}
-
-const data = await res.json();
-if (data.token) {
-authToken = data.token;
-showScreen("username-select");
-} else {
-alert(data.error || "לא התקבל טוקן מה-Auth Service");
-}
-} catch (err) {
-alert("שגיאת התחברות: " + err.message);
-}
-}
-
-// ===== Username + Socket.IO =====
-function setDisplayName() {
-const input = document.getElementById("display-name");
-const name = input.value.trim();
-if (!name) {
-alert("תן לנו שם תצוגה 😉");
-return;
-}
-
-displayName = name;
-userNameSpan.textContent = displayName;
-profileImg.textContent = displayName.charAt(0).toUpperCase() || "A";
-
-showScreen("chat");
-
-// Open socket connection
-if (socket) {
-socket.disconnect();
-socket = null;
-}
-
-socket = io("https://autoroy-chat-service.onrender.com", {
-auth: { token: authToken || "dummy-token-123" },
-transports: ["websocket", "polling"],
-});
-
-socket.on("connect", () => {
-addSystemMessage(displayName + " הצטרף לצ׳אט!");
-});
-
-socket.on("message", (msg) => {
-const isSelf = typeof msg === "string" && msg.startsWith(displayName + ":");
-addMessage(msg, isSelf);
-});
-
-socket.on("connect_error", (err) => {
-alert("שגיאת חיבור לצ׳אט: " + err.message);
-});
-
-socket.on("disconnect", () => {
-addSystemMessage("החיבור לצ׳אט התנתק.");
-});
-}
-
-// ===== Send message =====
-function sendMessage() {
-const input = document.getElementById("messageInput");
-const text = input.value.trim();
-if (!text || !socket || !displayName) return;
-
-const full = displayName + ": " + text;
-socket.emit("message", full);
-addMessage(full, true);
-
-input.value = "";
-input.focus();
-}
-</script>
+    function toggleTheme() {
+      document.body.classList.toggle('light-mode');
+      const toggleBtn = document.querySelector('.theme-toggle');
+      toggleBtn.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+    }
+  </script>
 </body>
 </html>
