@@ -457,8 +457,8 @@
       chatScreen.classList.add('active');
       userNameSpan.textContent = displayName;
       socket = io('https://autoroy-chat-service.onrender.com', {
-auth: { token: 'dummy-token-123' }
-});
+      auth: { token: username + 'token123' }
+    });
       socket.on('connect', () => addMessage(`${displayName} הצטרף לצ\'אט!`));
       socket.on('message', (msg) => addMessage(msg));
       socket.on('connect_error', (err) => alert('שגיאת חיבור: ' + err.message));
