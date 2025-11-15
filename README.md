@@ -1,4 +1,4 @@
-# **AutoRoy Scalable Chat 🚀**
+# **AutoRoy Chat 🚀**
 A full DevOps × Cloud × Microservices demonstration project.
 
 [🌐 **Live UI**](https://autoroy-chat-ui.onrender.com/)
